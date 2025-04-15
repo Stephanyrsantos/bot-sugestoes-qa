@@ -1,4 +1,3 @@
-const sugestoesPorTema = {
   login: [
     "🔐 Validar login com credenciais válidas e inválidas.",
     "🕵️‍♂️ Verificar tentativa de login com SQL Injection.",
@@ -52,15 +51,15 @@ function criarMensagem(texto, tipo) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  criarMensagem("🤖 Olá! Digite um tema como *login*, *checkout*, *cadastro*, *busca* ou *chatbot* para receber sugestões de testes.", "bot");
+  criarMensagem("👋 Olá! Eu sou o QA Helper Bot. Como posso te ajudar hoje?", "bot");
 });
 
 function limparTexto(texto) {
   return texto
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "") // remove acentos
-    .replace(/s$/, ""); // remove plural simples
+    .replace(/[\u0300-\u036f]/g, "") 
+    .replace(/s$/, ""); 
 }
 
 function pesquisar() {
@@ -71,28 +70,22 @@ function pesquisar() {
   campoInput.value = "";
 
   const termo = limparTexto(termoOriginal);
-  let encontrou = false;
+  const sugestoes = sugestoesPorTema[termo];
 
-  for (const chave in sugestoesPorTema) {
-    if (chave === termo) {
-      sugestoesPorTema[chave].forEach(sugestao => criarMensagem(sugestao, "bot"));
-      encontrou = true;
-      break;
-    }
-  }
-
-  if (!encontrou) {
-    criarMensagem("⚠️ Nenhuma sugestão encontrada relacionada a testes. Tente termos como 'login', 'checkout', 'cadastro', 'chatbot' ou 'busca'.", "bot error");
+  if (sugestoes) {
+    sugestoes.forEach(sugestao => criarMensagem(sugestao, "bot"));
+  } else {
+    criarMensagem("⚠️ Não encontrei sugestões para esse tema. Tente usar palavras como 'login', 'checkout', 'cadastro', 'chatbot' ou 'busca'.", "bot");
   }
 }
 
-campoInput.addEventListener("keypress", function (e) {
+
+campoInput.addEventListener("keydown", function (e) {
   if (e.key === "Enter") {
     e.preventDefault();
     pesquisar();
   }
 });
 
-if (botaoEnviar) {
-  botaoEnviar.addEventListener("click", pesquisar);
-}
+
+botaoEnviar.addEventListener("click", pesquisar);
